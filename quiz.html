@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>红帽挑战赛初赛刷题 · RHCSA</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --border:#2a2f3a;
+  --text:#e8eaf0; --muted:#9aa1b0; --red:#cc0000; --red2:#ff4d4d;
+  --green:#2ecc71; --yellow:#f1c40f; --blue:#4d8dff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:"Microsoft YaHei","PingFang SC",sans-serif;min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 80px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.logo{width:44px;height:44px;border-radius:10px;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:22px}
+h1{font-size:22px}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;animation:fadein .25s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2{font-size:16px;margin-bottom:12px}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.mode{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:.15s}
+.mode:hover{border-color:var(--red2);transform:translateY(-2px)}
+.mode b{display:block;font-size:15px;margin-bottom:6px}
+.mode span{color:var(--muted);font-size:12.5px;line-height:1.5}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;margin-bottom:8px}
+.tag.single{background:rgba(77,141,255,.15);color:var(--blue)}
+.tag.multi{background:rgba(241,196,15,.15);color:var(--yellow)}
+.tag.fill{background:rgba(46,204,113,.15);color:var(--green)}
+.tag.prac{background:rgba(204,0,0,.2);color:var(--red2)}
+.qtext{font-size:15.5px;line-height:1.7;margin:8px 0 16px;white-space:pre-wrap}
+.opt{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.15s;font-size:14.5px;line-height:1.6}
+.opt:hover{border-color:var(--blue)}
+.opt.sel{border-color:var(--blue);background:rgba(77,141,255,.08)}
+.opt.right{border-color:var(--green);background:rgba(46,204,113,.1)}
+.opt.wrong{border-color:var(--red2);background:rgba(255,77,77,.08)}
+.opt .key{font-weight:bold;color:var(--blue);min-width:20px}
+.opt.right .key{color:var(--green)}
+.opt.wrong .key{color:var(--red2)}
+.fillrow{display:flex;gap:10px;margin:12px 0}
+.fillrow input{flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:15px;outline:none;font-family:Consolas,monospace}
+.fillrow input:focus{border-color:var(--blue)}
+.btn{border:none;border-radius:10px;padding:12px 24px;font-size:15px;cursor:pointer;font-weight:bold;transition:.15s}
+.btn.primary{background:var(--red);color:#fff}
+.btn.primary:hover{background:var(--red2)}
+.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+.btn.ghost:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btnrow{display:flex;gap:12px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.explain{background:rgba(77,141,255,.07);border-left:3px solid var(--blue);border-radius:8px;padding:12px 14px;margin-top:14px;font-size:14px;line-height:1.7;color:#c9d4ee;white-space:pre-wrap}
+.cmd{font-family:Consolas,monospace;background:#0a0c10;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:8px 0;font-size:13.5px;color:#a6e3a1;white-space:pre-wrap;overflow-x:auto}
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.progress{flex:1;min-width:200px;height:8px;background:var(--panel2);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--red2));width:0;transition:.3s}
+.score-pill{background:var(--panel2);border:1px solid var(--border);border-radius:99px;padding:6px 16px;font-size:13px}
+.result{text-align:center;padding:30px 20px}
+.result .big{font-size:52px;font-weight:bold;margin:10px 0}
+.pct-bar{height:14px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:16px auto;max-width:420px}
+.pct-bar i{display:block;height:100%;border-radius:99px}
+.hidden{display:none}
+code{font-family:Consolas,monospace;background:#0a0c10;padding:1px 6px;border-radius:4px;font-size:13px;color:#a6e3a1}
+.wronglist{list-style:none;margin-top:10px}
+.wronglist li{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:13.5px;color:var(--muted);cursor:pointer;line-height:1.6}
+.wronglist li:hover{border-color:var(--red2)}
+.catline{color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">R</div>
+    <div>
+      <h1>红帽挑战赛初赛刷题</h1>
+      <div class="sub">RHCSA 为主 · 少量 RHCE · 单选 / 多选 / 填空 / 实操</div>
+    </div>
+  </header>
+  <div id="home"></div>
+  <div id="quiz" class="hidden"></div>
+  <div id="result" class="hidden"></div>
+</div>
+
+<script>
+/* ================== 题库 ==================
+  single: 单选  multi: 多选(answer为数组)  fill: 填空(answers为可接受答案数组)
+  prac: 实操题, showAnswer 后自判 */
+const BANK = [
+/* ---------- 单选题（依据讲义 + 网络真题风格） ---------- */
+{t:"single",cat:"Linux基础",q:"Linux 系统中，普通用户家目录默认位于哪个目录？",o:["/root","/home","/etc","/usr"],a:1,e:"普通用户家目录在 /home 下，root 用户家目录在 /root。"},
+{t:"single",cat:"Linux基础",q:"查看当前所在目录的命令是？",o:["pwd","cd","ls","whoami"],a:0,e:"pwd（print working directory）打印当前目录；ls 列出文件；whoami 显示当前用户。"},
+{t:"single",cat:"Linux基础",q:"递归新建多级目录 /data/log 应使用？",o:["mkdir /data/log","mkdir -p /data/log","touch -d /data/log","rmdir /data/log"],a:1,e:"mkdir -p 可递归创建不存在的父目录。"},
+{t:"single",cat:"Linux基础",q:"下列哪个命令只能删除空目录？",o:["rm","rm -r","rmdir","mv"],a:2,e:"rmdir 只能删除空目录；删除非空目录用 rm -r。"},
+{t:"single",cat:"Linux基础",q:"实时跟踪日志文件新增内容的命令是？",o:["cat -f","head -f","tail -f","less -f"],a:2,e:"tail -f 实时跟踪文件末尾新增内容，看日志必备。"},
+{t:"single",cat:"Linux基础",q:"分页查看大文件且支持上下翻页，推荐使用？",o:["cat","less","head","tail"],a:1,e:"less 可上下翻页；cat 一次输出全部，不适合大文件。"},
+{t:"single",cat:"Linux基础",q:"复制目录及其内容必须使用的参数是？",o:["-p","-r","-i","-f"],a:1,e:"cp -r 递归复制目录；cp -i 覆盖前提示。"},
+{t:"single",cat:"Linux基础",q:"基于数据库快速查找文件，但需先执行什么命令更新数据库？",o:["find","updatedb","which","whereis"],a:1,e:"locate 依赖 mlocate.db 数据库，需 updatedb 更新后才能查到新文件。"},
+{t:"single",cat:"Linux基础",q:"查询命令 curl 的可执行文件路径应使用？",o:["which curl","find curl","locate curl","whereis curl"],a:0,e:"which 专门查找命令的可执行文件路径。"},
+{t:"single",cat:"Linux基础",q:"将 /etc 目录仅打包不压缩，命令是？",o:["tar -zcvf a.tar.gz /etc","tar -Jcvf a.tar.xz /etc","tar -cvf a.tar /etc","tar -tvf a.tar /etc"],a:2,e:"仅打包用 tar -cvf；-z 是 gzip 压缩，-J 是 xz 压缩，-t 是查看清单。"},
+{t:"single",cat:"Linux基础",q:"tar 参数中 -J 表示？",o:["gzip 压缩","xz 压缩","bzip2 压缩","不压缩"],a:1,e:"-z gzip、-J xz、-j bzip2。"},
+{t:"single",cat:"Linux基础",q:"关于软链接与硬链接，下列说法正确的是？",o:["硬链接可以跨文件系统","硬链接可以链接目录","软链接删除源文件后失效","软链接与源文件共用 inode"],a:2,e:"硬链接不可跨文件系统、不可链目录；软链接是独立 inode，删源即失效。"},
+{t:"single",cat:"用户与组",q:"存放用户加密密码的文件是？",o:["/etc/passwd","/etc/shadow","/etc/group","/etc/gshadow"],a:1,e:"/etc/shadow 存密码密文与有效期；/etc/passwd 存基本信息。"},
+{t:"single",cat:"用户与组",q:"普通用户 UID 默认从多少开始？",o:["0","1","100","1000"],a:3,e:"root 为 0，系统用户 1~999，普通用户从 1000 开始。"},
+{t:"single",cat:"用户与组",q:"将用户 webuser 追加到 wheel 附属组且保留原有组的命令是？",o:["usermod -g wheel webuser","usermod -aG wheel webuser","useradd -G wheel webuser","groupadd wheel webuser"],a:1,e:"-aG 是追加附属组；-g 是修改主组，会丢失原附属组归属。"},
+{t:"single",cat:"用户与组",q:"删除用户及其家目录、邮件文件的命令是？",o:["userdel","userdel -r","userdel -f","rmuser -a"],a:1,e:"userdel -r 连同家目录与邮件一并删除。"},
+{t:"single",cat:"用户与组",q:"设置密码最长使用 30 天，应使用？",o:["passwd -M 30 user","chage -M 30 user","chown -M 30 user","usermod -M 30 user"],a:1,e:"chage 管理密码周期：-M 最长使用天数，-l 查看策略。"},
+{t:"single",cat:"用户与组",q:"锁定用户账号的命令是？",o:["passwd -l user","passwd -u user","chage -l user","usermod -L user"],a:0,e:"passwd -l 锁定、-u 解锁。"},
+{t:"single",cat:"用户与组",q:"能查询 LDAP 域用户的命令是？",o:["cat /etc/passwd","getent passwd user01","id -L user01","who user01"],a:1,e:"getent 除了查本地文件还能查 LDAP 等后端；cat 只能看本地。"},
+{t:"single",cat:"文件权限",q:"权限串 rwxr-xr-x 对应的数字是？",o:["755","644","700","777"],a:0,e:"r=4,w=2,x=1：rwx=7，r-x=5，r-x=5。"},
+{t:"single",cat:"文件权限",q:"对目录而言，能够进入该目录需要的权限是？",o:["r","w","x","s"],a:2,e:"目录的 x 是进入权限，是读取内部文件的前提；无 x 即使有 r 也进不去。"},
+{t:"single",cat:"文件权限",q:"umask 为 022 时，新建文件的默认权限是？",o:["644","666","755","600"],a:0,e:"新建文件 = 666−022 = 644；新建目录 = 777−022 = 755。"},
+{t:"single",cat:"文件权限",q:"目录内新建文件自动继承目录属组，应设置什么权限？",o:["SUID","SGID","Sticky","ACL"],a:1,e:"SGID（chmod g+s 目录）使新建文件继承目录属组，用于团队共享目录。"},
+{t:"single",cat:"文件权限",q:"/tmp 目录上常见的 Sticky 位（t）的作用是？",o:["执行时临时拥有属主权限","新建文件继承属组","仅文件所有者可删除自己的文件","自动加密文件"],a:2,e:"Sticky 位保证 /tmp 中用户只能删除自己的文件。"},
+{t:"single",cat:"文件权限",q:"ls -l 权限位末尾出现 + 表示？",o:["该文件有硬链接","该文件设置了 ACL","该文件是脚本","该文件被锁定"],a:1,e:"setfacl 设置 ACL 后，权限末尾显示 +；getfacl 可查看。"},
+{t:"single",cat:"文件权限",q:"为用户 webuser 单独授予文件读写权限，命令是？",o:["chmod u:webuser:rw file","setfacl -m u:webuser:rw file","chown webuser file","setfacl -x u:webuser file"],a:1,e:"setfacl -m 修改 ACL 条目，-x 删除条目。"},
+{t:"single",cat:"进程管理",q:"动态查看 CPU / 内存占用应使用？",o:["ps aux","top","pstree","free -m"],a:1,e:"ps 是静态快照，top 动态刷新，pstree 看进程树。"},
+{t:"single",cat:"进程管理",q:"哪个信号强制杀死进程且不可被拦截？",o:["15","9","2","1"],a:1,e:"SIGKILL(9) 强制不可拦截；SIGTERM(15) 温和终止推荐先用；SIGINT(2) 等同 Ctrl+C。"},
+{t:"single",cat:"进程管理",q:"进程状态 Z 表示？",o:["运行","可中断睡眠","僵尸进程","停止"],a:2,e:"Z 僵尸 = 进程已结束但父进程未回收资源；D 是不可中断睡眠。"},
+{t:"single",cat:"进程管理",q:"关于 nice 值，说法正确的是？",o:["值越大优先级越高","范围 -20~19，越小优先级越高","普通用户可设负值","root 用户只能调大 nice"],a:1,e:"nice 越小优先级越高；普通用户只能调大（降优先级），root 可设负值。"},
+{t:"single",cat:"磁盘与LVM",q:"RHEL 默认的文件系统是？",o:["ext4","xfs","vfat","btrfs"],a:1,e:"RHEL 7/8/9 默认 xfs，格式化命令 mkfs.xfs。"},
+{t:"single",cat:"磁盘与LVM",q:"查看已挂载文件系统的空间占用应使用？",o:["du -sh","df -h","lsblk","fdisk -l"],a:1,e:"df 看文件系统占用，du 看目录占用，lsblk 看块设备。"},
+{t:"single",cat:"磁盘与LVM",q:"df 显示的空间比 du 大，最常见原因是？",o:["统计误差","已删除文件仍被进程占用未释放","文件系统损坏","包含 swap"],a:1,e:"文件被删但进程仍持有句柄，空间未释放，lsof 可找到占用进程。"},
+{t:"single",cat:"磁盘与LVM",q:"适用于 GPT 分区的工具是？",o:["fdisk","gdisk","mkfs","mount"],a:1,e:"fdisk 用于 MBR，gdisk 用于 GPT，parted 两者都支持。"},
+{t:"single",cat:"磁盘与LVM",q:"永久挂载需要写入哪个文件？",o:["/etc/mtab","/etc/fstab","/proc/mounts","/etc/mount.conf"],a:1,e:"写入 /etc/fstab 才能开机自动挂载，推荐用 UUID 标识设备；改完用 mount -a 验证。"},
+{t:"single",cat:"磁盘与LVM",q:"xfs 文件系统扩容（LV 扩容后）应执行？",o:["resize2fs","xfs_growfs","mkfs.xfs","fsck.xfs"],a:1,e:"xfs 用 xfs_growfs，ext4 用 resize2fs；扩完 LV 必须扩文件系统才识别新容量。"},
+{t:"single",cat:"磁盘与LVM",q:"LVM 创建的正确流程是？",o:["lvcreate→vgcreate→pvcreate","pvcreate→vgcreate→lvcreate","vgcreate→pvcreate→lvcreate","pvcreate→lvcreate→vgcreate"],a:1,e:"物理卷 PV → 卷组 VG → 逻辑卷 LV。"},
+{t:"single",cat:"磁盘与LVM",q:"RAID5 至少需要几块硬盘？",o:["2","3","4","5"],a:1,e:"RAID5 分布式奇偶校验，至少 3 块，允许 1 块损坏；RAID1 是镜像，利用率 50%。"},
+{t:"single",cat:"磁盘与LVM",q:"关于 RAID0 的说法正确的是？",o:["允许 1 块盘损坏","镜像冗余","条带化，性能最高但无冗余","利用率 50%"],a:2,e:"RAID0 无冗余，单盘损坏数据全部丢失。"},
+{t:"single",cat:"磁盘与LVM",q:"修复 xfs 文件系统的命令是？",o:["fsck.ext4","xfs_repair","tune2fs","e2fsck"],a:1,e:"xfs_repair 修复 xfs（建议先卸载）；已挂载文件系统不要在线 fsck。"},
+{t:"single",cat:"软件包",q:"dnf/yum 相比 rpm 安装的最大优势是？",o:["速度更快","自动解决依赖关系","支持更多格式","不需要 root"],a:1,e:"dnf/yum 自动解析依赖；rpm 直接安装遇到依赖要手动处理。"},
+{t:"single",cat:"软件包",q:"rpm 卸载软件包的参数是？",o:["-i","-q","-e","-V"],a:2,e:"-i 装、-q 查、-e 卸、-qa 查全部、-V 校验。"},
+{t:"single",cat:"网络",q:"查看端口监听状态及对应进程的命令是？",o:["ip a","ss -tulnp","ping","nmcli"],a:1,e:"ss -tulnp 看 TCP/UDP 监听端口与进程；ip a 看 IP 地址。"},
+{t:"single",cat:"网络",q:"ping IP 通但 ping 域名不通，最可能的问题是？",o:["网络断开","DNS 解析故障","防火墙拦截","网卡故障"],a:1,e:"IP 通说明网络正常，域名不通指向 DNS 问题，可用 nslookup/dig 排查。"},
+{t:"single",cat:"网络",q:"NetworkManager 的配置管理工具是？",o:["netstat","nmcli","ss","ifup"],a:1,e:"nmcli / nmtui 是 NetworkManager 的管理工具，配置可持久生效。"},
+{t:"single",cat:"网络",q:"定位网络丢包节点应使用？",o:["tcpdump","mtr","ss","dig"],a:1,e:"mtr 定位丢包节点；tcpdump 抓包；dig/nslookup 查 DNS。"},
+{t:"single",cat:"Shell",q:"追加写入文件的符号是？",o:[">","<<",">>","2>"],a:2,e:"> 覆盖，>> 追加，2> 重定向错误，&> 合并输出与错误。"},
+{t:"single",cat:"Shell",q:"cmd >> all.log 2>&1 的含义是？",o:["输出覆盖写入，错误丢弃","输出追加写入，错误并入该文件","错误单独写文件","仅记录错误"],a:1,e:"2>&1 把错误并入当前标准输出的位置（即追加到 all.log）。"},
+{t:"single",cat:"Shell",q:"下列哪个符号表示『前面命令成功才执行后面』？",o:[";","&&","&","|"],a:1,e:"&& 短路执行；; 顺序执行；| 管道；& 后台运行。"},
+{t:"single",cat:"Shell",q:"同时把输出写到屏幕和文件的命令是？",o:["tee","cat","echo","redirect"],a:0,e:"command | tee out.log 双写文件与屏幕。"},
+{t:"single",cat:"systemd",q:"设置服务开机自启的命令是？",o:["systemctl start nginx","systemctl enable nginx","systemctl restart nginx","systemctl status nginx"],a:1,e:"enable 是开机自启，start 只是立即启动，两者不同。"},
+{t:"single",cat:"systemd",q:"查看某服务的 systemd 日志应使用？",o:["dmesg -u nginx","journalctl -u nginx","tail /var/log/nginx","systemctl log nginx"],a:1,e:"journalctl -u 服务名 查服务日志；dmesg 看内核/硬件日志。"},
+{t:"single",cat:"systemd",q:"运行级别 3 对应的 target 是？",o:["graphical.target","rescue.target","multi-user.target","reboot.target"],a:2,e:"3↔multi-user（命令行多用户）、5↔graphical（图形）、1↔rescue。"},
+{t:"single",cat:"systemd",q:"排查开机慢，分析各单元启动耗时应使用？",o:["systemctl blame","systemd-analyze blame","journalctl blame","top -b"],a:1,e:"systemd-analyze blame 列出各单元启动耗时。"},
+{t:"single",cat:"systemd",q:"编辑 /etc/sudoers 推荐使用的命令是？",o:["vim /etc/sudoers","visudo","sudo edit","chmod /etc/sudoers"],a:1,e:"visudo 自带语法检查，直接编辑写错会导致 sudo 失效。"},
+{t:"single",cat:"SELinux",q:"SELinux 属于什么类型的访问控制？",o:["自主访问控制 DAC","强制访问控制 MAC","基于角色 RBAC","基于属性 ABAC"],a:1,e:"SELinux 是内核中的 MAC 子系统，在 rwx 的 DAC 之外再加一层校验，root 也要遵守。"},
+{t:"single",cat:"SELinux",q:"查看 SELinux 当前模式的命令是？",o:["getenforce","setenforce","sestatus -Z","selinux -l"],a:0,e:"getenforce 查模式；setenforce 0/1 临时切换（重启失效），永久需改 /etc/selinux/config。"},
+{t:"single",cat:"SELinux",q:"SELinux Permissive 模式的行为是？",o:["拒绝违规并记录","仅记录不拒绝","完全关闭","禁止 root 登录"],a:1,e:"Enforcing 拒绝+记录 AVC 日志；Permissive 只记录不拒绝。"},
+{t:"single",cat:"SELinux",q:"查看文件 SELinux 上下文标签的命令是？",o:["ls -l","ls -Z","ls -i","stat"],a:1,e:"ls -Z 看安全上下文；restorecon -Rv 修复上下文。"},
+{t:"single",cat:"SELinux",q:"SELinux 违规拦截的关键日志线索是？",o:["AVC 日志","cron 日志","secure 日志","boot 日志"],a:0,e:"ausearch -m AVC 可查违规记录，audit2allow 可生成策略模块。"},
+{t:"single",cat:"排障",q:"查看内核与硬件启动日志的命令是？",o:["journalctl","dmesg","lsof","stat"],a:1,e:"dmesg 看内核/硬件，journalctl 看 systemd 服务日志。"},
+{t:"single",cat:"排障",q:"umount 报 target is busy 时，用什么找占用进程？",o:["ps aux","lsof","df -h","free"],a:1,e:"lsof 查看打开的文件/占用目录/端口的进程，如 lsof -i :80。"},
+{t:"single",cat:"排障",q:"查看文件 inode 编号的命令是？",o:["ls -i","ls -l","ls -Z","ls -h"],a:0,e:"ls -i 或 stat 查看 inode；硬链接与源文件共享同一 inode。"},
+{t:"single",cat:"排障",q:"将内存缓冲数据写入磁盘、防丢数据的命令是？",o:["swap","sync","flush","dump"],a:1,e:"sync 同步落盘，关机/拔盘前建议执行。"},
+
+/* ---------- 多选题 ---------- */
+{t:"multi",cat:"Linux基础",q:"下列哪些命令可以用来查看系统信息？",o:["ps","df","free","who"],a:[0,1,2,3],e:"ps 看进程、df 看磁盘、free 看内存、who 看登录用户，都是系统信息命令。"},
+{t:"multi",cat:"Linux基础",q:"Linux 文件权限的类型包括？",o:["读 r","写 w","执行 x","跳转 j"],a:[0,1,2],e:"权限只有 r/w/x 三种。"},
+{t:"multi",cat:"Linux基础",q:"Linux 支持的文件系统类型包括？",o:["ext4","xfs","iso9660","vfat"],a:[0,1,2,3],e:"ext4/xfs 本地、iso9660 光盘、vfat FAT 文件系统。"},
+{t:"multi",cat:"Linux基础",q:"下列哪些命令用于文件查找？",o:["find","locate","which","grep"],a:[0,1,2],e:"grep 是文本内容过滤，不是文件查找。"},
+{t:"multi",cat:"Linux基础",q:"tar 命令中下列参数含义正确的有？",o:["-c 创建","-x 解压","-t 查看清单","-v 指定文件名"],a:[0,1,2],e:"-f 才是指定文件名，-v 是显示过程。"},
+{t:"multi",cat:"Linux基础",q:"关于硬链接说法正确的有？",o:["与源文件共享同一 inode","删除源文件后链接仍有效","可以跨文件系统","不额外占用大量空间"],a:[0,1,3],e:"硬链接不可跨文件系统、不可链接目录，是软链接的特点反之。"},
+{t:"multi",cat:"用户与组",q:"下列属于用户管理命令的有？",o:["useradd","userdel","usermod","groupadd"],a:[0,1,2,3],e:"前三个管用户，groupadd 管组，都属于账号管理命令。"},
+{t:"multi",cat:"用户与组",q:"Linux 用户类型包括？",o:["管理员 root","系统用户","普通用户","游客账户 guest"],a:[0,1,2],e:"Linux 没有『游客账户』这个类别。"},
+{t:"multi",cat:"用户与组",q:"查看当前登录用户信息可使用的命令有？",o:["who","w","last","id"],a:[0,1,2,3],e:"who/w 看当前登录，last 看历史登录，id 看身份信息。"},
+{t:"multi",cat:"文件权限",q:"特殊权限包括？",o:["SUID","SGID","Sticky","HARD"],a:[0,1,2],e:"三大特殊权限：SUID 冒属主、SGID 继承属组、Sticky 仅所有者可删。"},
+{t:"multi",cat:"文件权限",q:"可以修改文件属主/属组的命令有？",o:["chown","chgrp","chmod","setfacl"],a:[0,1],e:"chmod 改权限位，setfacl 改 ACL，都不改属主属组。"},
+{t:"multi",cat:"磁盘与LVM",q:"查看磁盘相关信息的命令有？",o:["lsblk","fdisk -l","df -h","du -sh"],a:[0,1,2,3],e:"lsblk 块设备、fdisk -l 分区、df 文件系统占用、du 目录占用。"},
+{t:"multi",cat:"磁盘与LVM",q:"分区工具包括？",o:["fdisk","gdisk","parted","mkfs"],a:[0,1,2],e:"mkfs 是格式化工具，不是分区工具。"},
+{t:"multi",cat:"网络",q:"可以测试 DNS 解析的命令有？",o:["nslookup","dig","ping","tcpdump"],a:[0,1],e:"ping 可间接验证但 nslookup/dig 是专门的 DNS 查询工具。"},
+{t:"multi",cat:"网络",q:"常用的网络排障工具有？",o:["mtr","tcpdump","ss -s","lsof"],a:[0,1,2],e:"mtr 定位丢包、tcpdump 抓包、ss -s 套接字统计；lsof 主要查文件占用。"},
+{t:"multi",cat:"systemd",q:"systemctl 可以完成的操作有？",o:["start/stop 服务","enable 开机自启","status 查看状态","is-failed 判断失败"],a:[0,1,2,3],e:"这些都是 systemctl 子命令。"},
+
+/* ---------- 填空题 ---------- */
+{t:"fill",cat:"Linux基础",q:"显示当前登录用户名的命令是 ______。",a:["whoami"],e:"whoami 显示当前执行者用户名。"},
+{t:"fill",cat:"Linux基础",q:"实时跟踪日志文件新增内容：tail ______ /var/log/messages。（填参数）",a:["-f"],e:"tail -f 实时跟踪。"},
+{t:"fill",cat:"Linux基础",q:"查看发行版信息可以 cat /etc/______。",a:["os-release"],e:"/etc/os-release 存发行版信息。"},
+{t:"fill",cat:"用户与组",q:"查看用户 UID/GID 及附属组的命令是 ______ user01。",a:["id"],e:"id 命令。"},
+{t:"fill",cat:"用户与组",q:"查看密码策略：chage ______ user01。（填参数）",a:["-l"],e:"chage -l 列出密码策略。"},
+{t:"fill",cat:"文件权限",q:"r=4、w=2、x=1，则 rwxr-x--- 的数字权限是 ______。",a:["750"],e:"7+5+0=750。"},
+{t:"fill",cat:"文件权限",q:"查看 ACL 的命令是 ______ file.conf。",a:["getfacl"],e:"getfacl 查看，setfacl 设置。"},
+{t:"fill",cat:"进程管理",q:"强制杀死进程：kill ______ 12345。（填信号编号）",a:["-9","9"],e:"SIGKILL=9。"},
+{t:"fill",cat:"进程管理",q:"查找僵尸进程：ps aux | grep ______。",a:["defunct","zombie"],e:"僵尸进程标记为 defunct（Z 状态）。"},
+{t:"fill",cat:"磁盘与LVM",q:"查看目录 /var/www 自身及内部总大小：du ______ /var/www。（填参数）",a:["-sh","-hs","-sh ."],e:"du -sh 汇总显示人类可读大小。"},
+{t:"fill",cat:"磁盘与LVM",q:"获取分区 UUID 的命令：blkid ______。（填设备名）",a:["/dev/sdb1"],e:"blkid /dev/sdb1 输出 UUID 等信息。"},
+{t:"fill",cat:"网络",q:"查看监听端口及进程：ss ______。（填参数）",a:["-tulnp","-tuln"],e:"ss -tulnp。"},
+{t:"fill",cat:"systemd",q:"查看服务日志：journalctl ______ nginx。（填参数）",a:["-u"],e:"journalctl -u 服务名。"},
+{t:"fill",cat:"SELinux",q:"临时切换 SELinux 为宽容模式：setenforce ______。",a:["0"],e:"0 宽容，1 强制，重启后失效。"},
+{t:"fill",cat:"排障",q:"查看占用 80 端口的进程：lsof ______ :80。（填参数）",a:["-i"],e:"lsof -i :80。"},
+
+/* ---------- 实操题（参考 GitHub RHCSA 题库） ---------- */
+{t:"prac",cat:"实操",q:"找出系统中所有带 SUID 位的文件，并把列表保存到 /root/setuid_list。",c:"find / -type f -perm -4000 > /root/setuid_list",e:"-perm -4000 匹配 SUID；重定向保存结果。"},
+{t:"prac",cat:"实操",q:"在 /var/log/messages 中找出包含 ACPI 的行，导出到 /root/logs；然后把整个 /var/log 归档为 /tmp/log_archive.tgz。",c:"grep ACPI /var/log/messages > /root/logs\ntar czvf /tmp/log_archive.tgz /var/log/",e:"grep 过滤 + tar czvf 打包压缩。"},
+{t:"prac",cat:"实操",q:"把 /home 打包并用 gzip 压缩为 /tmp/home.tar.gz，然后查看包内清单（不解压）。",c:"tar czvf /tmp/home.tar.gz /home\ntar tvf /tmp/home.tar.gz",e:"czvf 打包 gzip 压缩；tvf 查看清单。"},
+{t:"prac",cat:"实操",q:"在 /tmp 下创建空文件 hard1，建立硬链接 hard2、hard3，编辑 hard2 后查看三者的 inode 是否相同。",c:"cd /tmp\ntouch hard1\nln hard1 hard2\nln hard1 hard3\necho test > hard2\nls -li hard1 hard2 hard3",e:"硬链接共享同一 inode，ls -li 查看。"},
+{t:"prac",cat:"实操",q:"在 /root 下创建指向 /tmp/hard2 的软链接 soft1，然后删除 /tmp/hard2，观察 soft1 是否失效。",c:"ln -s /tmp/hard2 /root/soft1\nrm -f /tmp/hard2\nls -l /root/soft1",e:"软链接是独立 inode，删源即失效（显示红色断链）。"},
+{t:"prac",cat:"实操",q:"创建文件 perm_file1：先设为 444，再给属主加执行、组和其他人加写，然后去掉其他人的写权限。",c:"touch perm_file1\nchmod 444 perm_file1\nchmod u+x,g+w,o+w perm_file1\nchmod o-w perm_file1",e:"chmod 符号法多对象用逗号分隔。"},
+{t:"prac",cat:"实操",q:"写一个脚本 /usr/local/bin/sysinfo.sh，显示主机名、系统信息和当前登录用户，并加上可执行权限。",c:"vim /usr/local/bin/sysinfo.sh\n#!/bin/bash\nhostnamectl\nwho\nchmod +x /usr/local/bin/sysinfo.sh",e:"脚本加 #!/bin/bash 解释器，chmod +x 赋执行权限。"},
+{t:"prac",cat:"实操",q:"写一个脚本批量创建 user10、user20、user30，创建成功后将密码设置为与用户名相同。",c:"for user in user10 user20 user30; do\n  useradd $user && echo $user | passwd --stdin $user\ndone",e:"passwd --stdin 是 RHEL 特有参数，从 stdin 读密码。"},
+{t:"prac",cat:"实操",q:"找出 /var 下大于 10M 的所有 .log 文件。",c:"find /var -name \"*.log\" -size +10M",e:"-size +10M 大于 10M；-mtime +30 表示 30 天前修改。"},
+{t:"prac",cat:"实操",q:"创建用户 webuser（UID 1501，建家目录），设置密码 30 天到期、提前 7 天告警。",c:"useradd -m -u 1501 webuser\npasswd webuser\nchage -M 30 -W 7 webuser",e:"useradd -m 建家目录，-u 指定 UID；chage 管密码周期。"},
+{t:"prac",cat:"实操",q:"把用户 webuser 追加到 wheel 组，且不能丢失其原有组。",c:"usermod -aG wheel webuser\nid webuser",e:"-aG 追加附属组；漏掉 -a 会替换全部附属组。"},
+{t:"prac",cat:"实操",q:"创建共享目录 /data/shared，要求组成员新建的文件自动继承目录属组，其他人不能删除别人的文件。",c:"mkdir -p /data/shared\nchgrp dev /data/shared\nchmod 2770 /data/shared",e:"SGID（2xxx）继承属组；7 中去掉其他用户权限；t 粘滞位防互删（1770）。"},
+{t:"prac",cat:"实操",q:"新分区 /dev/sdb1 格式化为 xfs，挂载到 /data，并配置开机自动挂载。",c:"mkfs.xfs /dev/sdb1\nmkdir /data\nmount /dev/sdb1 /data\nblkid /dev/sdb1   # 取 UUID\n# /etc/fstab 追加：UUID=xxx /data xfs defaults 0 0\nmount -a   # 验证",e:"永久挂载写 fstab，优先 UUID；mount -a 验证不报错才安全。"},
+{t:"prac",cat:"实操",q:"创建 LVM：将 /dev/sdb1 做成 PV，创建卷组 vgdata，再创建 10G 逻辑卷 lvdata 并格式化 xfs。",c:"pvcreate /dev/sdb1\nvgcreate vgdata /dev/sdb1\nlvcreate -L 10G -n lvdata vgdata\nmkfs.xfs /dev/vgdata/lvdata",e:"PV→VG→LV 三步流程。"},
+{t:"prac",cat:"实操",q:"将逻辑卷 /dev/vgdata/lvdata 在线扩容 5G，并使 xfs 文件系统识别新容量。",c:"lvextend -L +5G /dev/vgdata/lvdata\nxfs_growfs /挂载点",e:"xfs 用 xfs_growfs（参数是挂载点），ext4 用 resize2fs（参数是设备）。"},
+{t:"prac",cat:"实操",q:"创建 512M 交换文件 /swapfile 并启用。",c:"dd if=/dev/zero of=/swapfile bs=1M count=512\nchmod 600 /swapfile\nmkswap /swapfile\nswapon /swapfile\nswapon -s   # 验证",e:"swap 文件权限需 600，否则有安全隐患。"},
+{t:"prac",cat:"实操",q:"为用户 webuser 单独授予对 /etc/app.conf 的读写权限（基本权限不变）。",c:"setfacl -m u:webuser:rw /etc/app.conf\ngetfacl /etc/app.conf",e:"setfacl -m 设置 ACL，getfacl 验证；ls -l 末尾出现 +。"},
+{t:"prac",cat:"实操",q:"配置定时任务：每天凌晨 2 点以 root 执行 /root/backup.sh。",c:"crontab -e\n0 2 * * * /root/backup.sh",e:"分 时 日 月 周；0 2 * * * 每天 02:00。"},
+{t:"prac",cat:"实操",q:"配置 SELinux：把 /var/www/html/index.html 恢复正确的安全上下文。",c:"restorecon -Rv /var/www/html",e:"新建/移动的文件上下文可能不对，restorecon 修复；ls -Z 验证。"},
+{t:"prac",cat:"实操",q:"将 nginx 服务设为开机自启并立即启动，然后确认 80 端口在监听。",c:"systemctl enable --now nginx\nss -tulnp | grep :80",e:"enable --now 一步完成自启+启动。"},
+{t:"prac",cat:"实操",q:"把系统默认运行级别设为多用户命令行模式。",c:"systemctl set-default multi-user.target\nsystemctl get-default   # 验证",e:"multi-user.target = 运行级别 3。"},
+{t:"prac",cat:"实操",q:"查找 30 天前被修改过的文件（全盘）。",c:"find / -mtime +30",e:"+30 表示修改时间超过 30 天。"},
+];
+
+/* ================== 状态与渲染 ================== */
+const TYPE_NAME={single:"单选题",multi:"多选题",fill:"填空题",prac:"实操题"};
+let state={list:[],idx:0,score:0,answered:false,mode:"",wrong:[],startTs:0,timerId:null};
+
+const $=id=>document.getElementById(id);
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+function home(){
+  const counts={};BANK.forEach(q=>counts[q.t]=(counts[q.t]||0)+1);
+  const hist=loadHist();
+  $("home").classList.remove("hidden");$("quiz").classList.add("hidden");$("result").classList.add("hidden");
+  const w=loadWrong();
+  $("home").innerHTML=`
+  <div class="card">
+    <h2>开始刷题</h2>
+    <div class="modes">
+      <div class="mode" onclick="start('all')"><b>随机综合</b><span>全部 ${BANK.length} 题随机抽 20 题，模拟初赛</span></div>
+      <div class="mode" onclick="start('single')"><b>单选题（${counts.single||0}）</b><span>知识点判断，逐题解析</span></div>
+      <div class="mode" onclick="start('multi')"><b>多选题（${counts.multi||0}）</b><span>选错/漏选均不得分</span></div>
+      <div class="mode" onclick="start('fill')"><b>填空题（${counts.fill||0}）</b><span>输入命令与参数，精确匹配</span></div>
+      <div class="mode" onclick="start('prac')"><b>实操题（${counts.prac||0}）</b><span>先自己想，再对参考命令</span></div>
+      <div class="mode" onclick="start('wrong')"><b>错题重练（${w.length}）</b><span>重新做之前做错的题</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>考前速记</h2>
+    <div style="font-size:13.5px;line-height:2;color:var(--muted)">
+      · 目录 x 是进入权限，无 x 有 r 也读不了内部文件<br>
+      · <code>usermod -aG</code> 追加附属组；<code>-g</code> 是改主组<br>
+      · 新文件 = 666−umask，新目录 = 777−umask<br>
+      · SUID 冒属主 · SGID 继承属组 · Sticky 仅所有者可删<br>
+      · RHEL 默认 xfs：扩容 <code>xfs_growfs 挂载点</code>，ext4 用 <code>resize2fs 设备</code><br>
+      · LVM 流程：pvcreate → vgcreate → lvcreate<br>
+      · kill 15 温和 / 9 强制不可挡 / 2 等同 Ctrl+C<br>
+      · <code>systemctl enable</code> 是自启，<code>start</code> 只是启动<br>
+      · setenforce 0 仅临时，永久要改 /etc/selinux/config<br>
+      · IP 通域名不通 = DNS 问题；丢包 mtr、抓包 tcpdump
+    </div>
+  </div>
+  ${hist.length?`<div class="card">
+    <h2>刷题记录</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+      <tr style="color:var(--muted);text-align:left"><th style="padding:6px 8px">模式</th><th style="padding:6px 8px">成绩</th><th style="padding:6px 8px">正确率</th><th style="padding:6px 8px">用时</th><th style="padding:6px 8px">时间</th></tr>
+      ${hist.slice(0,10).map(h=>`<tr style="border-top:1px solid var(--border)"><td style="padding:8px">${h.mode}</td><td style="padding:8px">${h.score}/${h.total}</td><td style="padding:8px;color:${h.pct>=70?"var(--green)":"var(--yellow)"}">${h.pct}%</td><td style="padding:8px">${fmt(h.secs)}</td><td style="padding:8px;color:var(--muted)">${h.time}</td></tr>`).join("")}
+    </table>
+    <div style="margin-top:12px;text-align:right"><button class="btn ghost" onclick="clearData()">清空记录</button></div>
+  </div>`:""}`;
+}
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(mode){
+  let list;
+  if(mode==="all")list=shuffle([...BANK]).slice(0,20);
+  else if(mode==="wrong"){list=loadWrong();if(!list.length){alert("暂无错题记录");return}}
+  else list=BANK.filter(q=>q.t===mode);
+  if(mode!=="all"&&mode!=="wrong")list=shuffle([...list]);
+  state={list,idx:0,score:0,answered:false,mode,wrong:[],startTs:Date.now(),timerId:null};
+  state.timerId=setInterval(tickTimer,1000);
+  $("home").classList.add("hidden");$("result").classList.add("hidden");$("quiz").classList.remove("hidden");
+  render();
+}
+function fmt(s){const m=Math.floor(s/60),ss=s%60;return m+":"+String(ss).padStart(2,"0")}
+function tickTimer(){const el=document.getElementById("timer");if(el)el.textContent="⏱ "+fmt(Math.floor((Date.now()-state.startTs)/1000))}
+function elapsed(){clearInterval(state.timerId);return Math.floor((Date.now()-state.startTs)/1000)}
+
+let sel=[];
+function render(){
+  const q=state.list[state.idx];state.answered=false;sel=[];
+  const pct=Math.round(state.idx/state.list.length*100);
+  $("quiz").innerHTML=`
+  <div class="topbar">
+    <span class="score-pill">第 ${state.idx+1} / ${state.list.length} 题 · 得分 ${state.score}</span>
+    <span class="score-pill" id="timer">⏱ 0:00</span>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <button class="btn ghost" onclick="quit()">退出</button>
+  </div>
+  <div class="card">
+    <span class="tag ${q.t}">${TYPE_NAME[q.t]}</span>
+    <span class="catline">${q.cat}${(q.t==="single"||q.t==="multi")?" · 键盘 A/B/C/D 选择，Enter 提交":""}</span>
+    <div class="qtext">${esc(q.q)}</div>
+    ${q.t==="single"||q.t==="multi"
+      ?q.o.map((o,i)=>`<div class="opt" id="opt${i}" onclick="pick(${i})"><span class="key">${"ABCD"[i]}</span><span>${esc(o)}</span></div>`).join("")
+      :q.t==="fill"
+      ?`<div class="fillrow"><input id="fillin" placeholder="输入答案，回车提交" autocomplete="off" onkeydown="if(event.key==='Enter')submitFill()"></div>`
+      :`<div style="color:var(--muted);font-size:13.5px;margin-bottom:14px">先在心里（或虚拟机上）写出完整命令，再点击下方按钮核对参考答案。</div>`}
+    <div class="btnrow">
+      <span></span>
+      ${q.t==="prac"?`<button class="btn primary" id="revealBtn" onclick="reveal()">查看参考命令</button>`
+        :q.t==="fill"?`<button class="btn primary" onclick="submitFill()">提交</button>`
+        :`<button class="btn primary" id="checkBtn" onclick="check()">提交</button>`}
+    </div>
+    <div id="feedback"></div>
+  </div>`;
+  if(q.t==="fill")setTimeout(()=>$("fillin")&&$("fillin").focus(),50);
+}
+
+function pick(i){
+  if(state.answered)return;
+  const q=state.list[state.idx];
+  if(q.t==="single"){sel=[i];q.o.forEach((_,j)=>$("opt"+j).classList.toggle("sel",j===i));$("checkBtn").disabled=false;}
+  else{const k=sel.indexOf(i);if(k>=0)sel.splice(k,1);else sel.push(i);sel.sort();$("opt"+i).classList.toggle("sel",k<0);}
+}
+
+function check(){
+  if(state.answered)return;
+  const q=state.list[state.idx];state.answered=true;
+  let ok;
+  if(q.t==="single")ok=sel.length===1&&sel[0]===q.a;
+  else ok=sel.length===q.a.length&&sel.every(i=>q.a.includes(i));
+  q.o.forEach((_,j)=>{
+    const el=$("opt"+j);el.classList.remove("sel");
+    if(q.t==="single"){if(j===q.a)el.classList.add("right");else if(j===sel[0])el.classList.add("wrong");}
+    else{if(q.a.includes(j))el.classList.add("right");else if(sel.includes(j))el.classList.add("wrong");}
+  });
+  finish(ok,q);
+}
+
+function submitFill(){
+  if(state.answered)return;
+  const q=state.list[state.idx];
+  const v=$("fillin").value.trim().replace(/\s+/g," ");
+  if(!v)return;
+  state.answered=true;
+  const ok=q.a.some(a=>a.toLowerCase()===v.toLowerCase());
+  const inp=$("fillin");
+  inp.style.borderColor=ok?"var(--green)":"var(--red2)";
+  inp.style.opacity=.7;
+  finish(ok,q);
+}
+
+function reveal(){
+  const q=state.list[state.idx];
+  $("revealBtn").disabled=true;
+  // 实操题自判
+  $("feedback").innerHTML=`
+    <div class="cmd">${esc(q.c)}</div>
+    <div class="explain">${esc(q.e)}</div>
+    <div class="btnrow">
+      <button class="btn ghost" onclick="selfJudge(0)">我还没掌握</button>
+      <button class="btn primary" onclick="selfJudge(1)">我掌握了</button>
+    </div>`;
+}
+
+function selfJudge(ok){
+  if(state.answered)return;
+  state.answered=true;
+  if(ok)state.score++;else state.wrong.push(state.idx);
+  advance();
+}
+
+function finish(ok,q){
+  if(ok)state.score++;else state.wrong.push(state.idx);
+  $("feedback").innerHTML=`<div class="explain">${ok?"✅ 回答正确":"❌ 回答错误"}${q.e?"\n\n"+esc(q.e):""}</div>
+  <div class="btnrow"><span></span>
+    ${state.idx+1>=state.list.length
+      ?`<button class="btn primary" id="nextBtn" onclick="advance()">查看成绩</button>`
+      :`<button class="btn primary" id="nextBtn" onclick="advance()">下一题 →</button>`}
+  </div>`;
+  $("nextBtn").focus();
+}
+function advance(){
+  state.idx++;
+  if(state.idx>=state.list.length)showResult();else render();
+}
+
+function showResult(){
+  const total=state.list.length,pct=Math.round(state.score/total*100);
+  const secs=elapsed();
+  let grade,col;
+  if(pct>=90){grade="优秀，初赛稳了！";col="var(--green)"}
+  else if(pct>=70){grade="良好，再刷几轮错题";col="var(--blue)"}
+  else if(pct>=50){grade="及格边缘，重点补弱项";col="var(--yellow)"}
+  else{grade="还得多刷，回讲义补基础";col="var(--red2)"}
+  // 记录历史
+  const hist=loadHist();
+  const key=state.mode==="all"?"all":state.mode;
+  hist.unshift({mode:TYPE_NAME[key]||"随机综合",score:state.score,total,pct,secs,time:new Date().toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"})});
+  saveHist(hist.slice(0,20));
+  // 存错题
+  const wrongQs=state.wrong.map(i=>state.list[i]);
+  if(state.mode!=="wrong"){const w=loadWrong();wrongQs.forEach(q=>{if(!w.some(x=>x.q===q.q))w.push(q)});saveWrong(w)}
+  else{const w=loadWrong();const keep=w.filter(x=>!wrongQs.some(y=>y.q===x.q));saveWrong(keep)}
+  const wrongHtml=state.wrong.length?`<ul class="wronglist">${state.wrong.map(i=>{const q=state.list[i];return `<li onclick="retryWrong()">${TYPE_NAME[q.t]} · ${esc(q.q).slice(0,60)}…</li>`}).join("")}</ul>`:"<p style='color:var(--muted)'>本次全对，没有错题 🎉</p>";
+  $("quiz").classList.add("hidden");
+  $("result").classList.remove("hidden");
+  $("result").innerHTML=`
+  <div class="card result">
+    <h2>练习结束</h2>
+    <div class="big" style="color:${col}">${state.score} / ${total}</div>
+    <div class="pct-bar"><i style="width:${pct}%;background:${col}"></i></div>
+    <p style="color:var(--muted)">${grade}（正确率 ${pct}% · 用时 ${fmt(secs)}）</p>
+    <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn primary" onclick="start('${state.mode}')">再来一轮</button>
+      <button class="btn ghost" onclick="home()">返回首页</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>本次错题（点击重练全部错题）</h2>
+    ${wrongHtml}
+  </div>`;
+}
+
+function retryWrong(){start("wrong")}
+function quit(){clearInterval(state.timerId);if(confirm("确定退出本次练习？当前进度不保存。"))home()}
+/* 键盘快捷键 */
+document.addEventListener("keydown",e=>{
+  if($("quiz").classList.contains("hidden"))return;
+  if(state.answered){
+    if(e.key==="Enter"){e.preventDefault();const b=document.querySelector(".btnrow .btn.primary:last-of-type, #nextBtn");if(b)b.click();}
+    return;
+  }
+  const q=state.list[state.idx];if(!q)return;
+  if(q.t==="single"||q.t==="multi"){
+    const k=e.key.toUpperCase();
+    const i="ABCD".indexOf(k);
+    if(i>=0&&i<q.o.length){pick(i);e.preventDefault()}
+    else if(e.key==="Enter"&&q.t==="single"&&sel.length)check();
+    else if(e.key==="Enter"&&q.t==="multi"&&sel.length)check();
+  }else if(q.t==="fill"&&e.key==="Enter"){submitFill()}
+});
+
+/* 错题本（localStorage） */
+function loadWrong(){try{return JSON.parse(localStorage.getItem("rhcsa_wrong")||"[]")}catch(e){return[]}}
+function saveWrong(w){try{localStorage.setItem("rhcsa_wrong",JSON.stringify(w))}catch(e){}}
+/* 历史成绩 */
+function loadHist(){try{return JSON.parse(localStorage.getItem("rhcsa_hist")||"[]")}catch(e){return[]}}
+function saveHist(h){try{localStorage.setItem("rhcsa_hist",JSON.stringify(h))}catch(e){}}
+function clearData(){if(confirm("清空错题本和刷题记录？")){localStorage.removeItem("rhcsa_wrong");localStorage.removeItem("rhcsa_hist");home()}}
+
+home();
+</script>
+</body>
+</html>
